@@ -8,6 +8,7 @@ Adafruit_DCMotor *myMotor = AFMS.getMotor(1);
 const int ir_read = A0;
 int state;
 int counter;
+int desired_pos_deg = 90; // desired position in degrees; SET THIS FOR TESTING
 
 void setup() {
   Serial.begin(9600);  // set up Serial library at 9600 bps
@@ -19,11 +20,15 @@ void setup() {
 }
 
 void loop() {
+  
   uint8_t i;
   myMotor->run(FORWARD);
-
-//  detect_slice();
-
+  
+  
+  // // Convert desired_pos to ticks
+  int desired_pos_slice = desired_pos_deg / 36; // denominator is angle of each slice; SET THIS FOR NEW PINWHEEL
+  
+  // // Detect slice change and increment counter;
   if (analogRead(ir_read) < 1000 && state == 1) { // if sensing black slice when prev state is white,
     state = 0;
     counter++;
@@ -32,19 +37,25 @@ void loop() {
     state = 1;
     counter++;
   }
-  
   Serial.print("state: "); Serial.println(state);
   Serial.print("COUNT: "); Serial.println(counter);
-
   delay(300);
   
-  if (counter == 9) {
-    Serial.println("RELEASE THE KRAKEN");
+  // // If desired position is reached, stop the motor
+  if (counter == desired_pos_slice) {
     myMotor->setSpeed(0);
   }
   
+  
+  
+  
 }
 
+
+
+
+
+// detect_slice() may or may not be necessary
 void detect_slice(){
   
   int state = 0;
