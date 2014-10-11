@@ -25,57 +25,41 @@ void loop() {
 
 //  Serial.print("sensorValue: "); Serial.println(analogRead(ir_read));
   Serial.println(analogRead(ir_read));
-  if (analogRead(ir_read) < 1000) { // if sensing black slice
+  if (analogRead(ir_read) < 1000 && state == 1) { // if sensing black slice when prev state is white,
     state = 0;
+    counter++;
   }
-  if (analogRead(ir_read) >= 1000) { // if sensing white slice
+  if (analogRead(ir_read) >= 1000 && state == 0) { // if sensing white slice when prev state is black,
     state = 1;
+    counter++;
   }
   
-  Serial.println(state);
+  Serial.print("state: "); Serial.println(state);
+  Serial.println(counter);
   
-//  delay(300);
-  
-//  
-//    counter++;
-//  }
-//  if (sensorValue > 1000) { // if sensing white slice
-//    state = 1;
-//    counter++;
-//  }
-//  
-//  Serial.print("counter: "); Serial.println(counter);
-//  Serial.println(state);
   delay(3);
   
-//  detect_pos();
+  detect_slice();
 
 }
 
-//void detect_pos(){
-//  
-//  int state = 0;
-//  int sensorValue = 0;
-//  int counter;
-//  int angle;
-//  
-//  // Threshold value must be changed according to ambient lighting
-//  if (state == 0 && sensorValue<1000){ // If state is black and sensorVal < 1000
-//    state = 1;
-//    counter = counter + 1;
-//    angle += counter*30;
-//    Serial.print("counter: ");
-//    Serial.println(counter);
-//  }
-//  if (state == 1 && sensorValue>1000){ // If state is white and sensorVal > 1000
-//    state = 0;
-//    counter = counter + 1;
-//    angle += counter*30;
-//    Serial.print("counter: ");
-//    Serial.println(counter);
-//  }
-//
-//  Serial.print("counter: ");
-//  Serial.println(counter);
-//  
-//}
+void detect_slice(){
+  
+  int state = 0;
+  int sensorValue = 0;
+  int counter;
+  int angle;
+  
+  if (analogRead(ir_read) < 1000 && state == 1) { // if sensing black slice when prev state is white,
+    state = 0;
+    counter++;
+  }
+  if (analogRead(ir_read) >= 1000 && state == 0) { // if sensing white slice when prev state is black,
+    state = 1;
+    counter++;
+  }
+  
+  Serial.print("state: "); Serial.println(state);
+  Serial.println(counter);
+  
+}
