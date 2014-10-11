@@ -13,7 +13,7 @@ void setup() {
   Serial.begin(9600);  // set up Serial library at 9600 bps
   AFMS.begin();        // create with the default frequency 1.6KHz
   
-  myMotor->setSpeed(50);
+  myMotor->setSpeed(75);
   myMotor->run(FORWARD);
   myMotor->run(RELEASE);
 }
@@ -36,7 +36,13 @@ void loop() {
   Serial.print("state: "); Serial.println(state);
   Serial.print("COUNT: "); Serial.println(counter);
 
-  delay(30);
+  delay(300);
+  
+  if (counter == 9) {
+    Serial.println("RELEASE THE KRAKEN");
+    myMotor->setSpeed(0);
+  }
+  
 }
 
 void detect_slice(){
@@ -46,13 +52,15 @@ void detect_slice(){
   int counter;
   int angle;
   
+  Serial.println(counter);
+  
   if (analogRead(ir_read) < 1000 && state == 1) { // if sensing black slice when prev state is white,
     state = 0;
-    counter++;
+//    counter++;
   }
   if (analogRead(ir_read) >= 1000 && state == 0) { // if sensing white slice when prev state is black,
     state = 1;
-    counter++;
+//    counter++;
   }
   
   Serial.print("state: "); Serial.println(state);
