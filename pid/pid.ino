@@ -25,14 +25,14 @@ void loop() {
 
 //  Serial.print("sensorValue: "); Serial.println(analogRead(ir_read));
   Serial.println(analogRead(ir_read));
-  if (analogRead(ir_read) >= 1000) { // if sensing black slice
-//    state = 0;
-    Serial.println("white");
+  if (analogRead(ir_read) < 1000) { // if sensing black slice
+    state = 0;
   }
-  if (analogRead(ir_read) < 1000) { // if sensing white slice
-//    state = 1;
-    Serial.println("BLACK");
+  if (analogRead(ir_read) >= 1000) { // if sensing white slice
+    state = 1;
   }
+  
+  Serial.println(state);
   
 //  delay(300);
   
