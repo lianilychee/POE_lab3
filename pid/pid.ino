@@ -24,22 +24,23 @@ void loop() {
   myMotor->run(FORWARD);
 
 //  Serial.print("sensorValue: "); Serial.println(analogRead(ir_read));
-  Serial.println(analogRead(ir_read));
-  if (analogRead(ir_read) < 1000 && state == 1) { // if sensing black slice when prev state is white,
-    state = 0;
-    counter++;
-  }
-  if (analogRead(ir_read) >= 1000 && state == 0) { // if sensing white slice when prev state is black,
-    state = 1;
-    counter++;
-  }
-  
-  Serial.print("state: "); Serial.println(state);
-  Serial.println(counter);
-  
-  delay(3);
+//  Serial.println(analogRead(ir_read));
+//  if (analogRead(ir_read) < 1000 && state == 1) { // if sensing black slice when prev state is white,
+//    state = 0;
+//    counter++;
+//  }
+//  if (analogRead(ir_read) >= 1000 && state == 0) { // if sensing white slice when prev state is black,
+//    state = 1;
+//    counter++;
+//  }
+//  
+//  Serial.print("state: "); Serial.println(state);
+//  Serial.println(counter);
+//  
+//  delay(3);
   
   detect_slice();
+  delay(3);
 
 }
 
@@ -60,6 +61,6 @@ void detect_slice(){
   }
   
   Serial.print("state: "); Serial.println(state);
-  Serial.println(counter);
+  Serial.print("COUNT: "); Serial.println(counter);
   
 }
