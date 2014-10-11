@@ -10,6 +10,6 @@ void setup() {
 void loop() {
   
   Serial.println(analogRead(ir_read));
-  delay(300);
+  delay(3);
             
 }
