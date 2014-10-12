@@ -14,21 +14,23 @@ int P;
 int I;
 int control_sig;
 int desired_pos_deg = 180; // desired position in degrees; SET THIS FOR TESTING
-int kp = 2;
-int ki = 20;
+int kp = 1;
+int ki = 2;
 int slice_angle = 15;
 int error_threshold = 20;
- 
+int dir=1;
+int white_thresh = 800;
+int black_thresh = 700;
+
 void setup() {
   Serial.begin(9600);  // set up Serial library at 9600 bps
   AFMS.begin();        // create with the default frequency 1.6KHz
-  myMotor->setSpeed(50);
-  myMotor->run(FORWARD);
+  myMotor->setSpeed(20);
 }
  
 void loop() {
   uint8_t i;
-  myMotor->run(FORWARD);
+//  myMotor->run(FORWARD);
  
   // // Convert desired_pos to ticks
   desired_pos_slice = (desired_pos_deg / slice_angle) + 1; // denominator is angle of each slice; SET THIS FOR NEW PINWHEEL
@@ -45,10 +47,18 @@ void adjust_speed(){
   control_sig = P + I;
   
   
-  if (P > 200){ P = 200; }
-  if (error > error_threshold){ myMotor->setSpeed(P); }
-  else if (error < 0){ myMotor->run(BACKWARD); myMotor->setSpeed(P); }
-  else{ myMotor->setSpeed(0); }
+  if (control_sig > 100){ control_sig = 100; }
+  if (error > 0){ 
+    myMotor->run(FORWARD);
+    dir = 1;
+    myMotor->setSpeed(control_sig); 
+  }
+  else if (error < 0){ 
+    myMotor->run(BACKWARD); 
+    dir = -1;
+    myMotor->setSpeed(control_sig); 
+  }
+ // else{ myMotor->setSpeed(0); Serial.println("STOP");}
 
 
   
@@ -58,10 +68,12 @@ void detect_slice(){
   sensorVal = analogRead(ir_read);
   // Detect slice change and increment counter;
   // if sensing black slice when prev state is white,
-  if (sensorVal > 900 && state == 1) { state = 0; counter++; }
+  if (sensorVal > white_thresh && state == 1 && dir == 1) { state = 0; counter++; }
   // if sensing white slice when prev state is black,
-  if (sensorVal < 790 && state == 0) { state = 1; counter++; }
- 
+  if (sensorVal < black_thresh && state == 0 && dir == 1) { state = 1; counter++; }
+  if (sensorVal > white_thresh && state == 1 && dir ==-1) { state = 0; counter--; }
+  if (sensorVal < black_thresh && state == 0 && dir==-1) { state = 1; counter--; }
+
   Serial.print("state: "); Serial.println(state);
   Serial.print("ir_read: "); Serial.println(sensorVal);
   Serial.print("COUNT: "); Serial.println(counter);
