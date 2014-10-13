@@ -7,6 +7,7 @@ Adafruit_DCMotor *myMotor = AFMS.getMotor(1);
 const int ir_read = A0;
 int state;
 int counter=0;
+//int counter_prev;
 int sensorVal;
 int desired_pos_slice;
 int error;
@@ -19,8 +20,8 @@ int ki = 2;
 int slice_angle = 15;
 int error_threshold = 20;
 int dir=1;
-int white_thresh = 800;
-int black_thresh = 700;
+int white_thresh = 950;
+int black_thresh = 925;
 
 void setup() {
   Serial.begin(9600);  // set up Serial library at 9600 bps
@@ -46,9 +47,8 @@ void adjust_speed(){
   I += ki * error;
   control_sig = P + I;
   
-  
   if (control_sig > 100){ control_sig = 100; }
-  if (error > 0){ 
+  if (error >= 0){ 
     myMotor->run(FORWARD);
     dir = 1;
     myMotor->setSpeed(control_sig); 
@@ -60,6 +60,12 @@ void adjust_speed(){
   }
  // else{ myMotor->setSpeed(0); Serial.println("STOP");}
 
+
+  
+  if counter is incremented but previous counter is repeatedl, stop!
+  
+  
+  
 
   
 }
