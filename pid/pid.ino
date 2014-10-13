@@ -1,13 +1,13 @@
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_PWMServoDriver.h"
- 
+
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 Adafruit_DCMotor *myMotor = AFMS.getMotor(1);
 const int ir_read = A0;
 int state;
 int counter=0;
-//int counter_prev;
+int counter_prev;
 int sensorVal;
 int desired_pos_slice;
 int error;
@@ -28,11 +28,11 @@ void setup() {
   AFMS.begin();        // create with the default frequency 1.6KHz
   myMotor->setSpeed(20);
 }
- 
+
 void loop() {
   uint8_t i;
-//  myMotor->run(FORWARD);
- 
+  //  myMotor->run(FORWARD);
+
   // // Convert desired_pos to ticks
   desired_pos_slice = (desired_pos_deg / slice_angle) + 1; // denominator is angle of each slice; SET THIS FOR NEW PINWHEEL
   detect_slice();
@@ -46,33 +46,28 @@ void adjust_speed(){
   P = error * kp;
   I += ki * error;
   control_sig = P + I;
-  
-  if (control_sig > 100){ control_sig = 100; }
-  if (error >= 0){ 
+
+  if (control_sig > 100){ 
+    control_sig = 100; 
+  }
+  if (error >= slice_angle){ 
     myMotor->run(FORWARD);
     dir = 1;
     myMotor->setSpeed(control_sig); 
   }
-  else if (error < 0){ 
+  if (error < 0){ 
     myMotor->run(BACKWARD); 
     dir = -1;
     myMotor->setSpeed(control_sig); 
   }
- // else{ myMotor->setSpeed(0); Serial.println("STOP");}
+  if (error > -slice_angle + 5 && error < slice_angle - 5) {
+    myMotor->setSpeed(0);
+  }
 
-
-  
-  if counter is incremented but previous counter is repeatedl, stop!
-  
-  
-  
-
-  
 }
 
 void detect_slice(){
   sensorVal = analogRead(ir_read);
-  // Detect slice change and increment counter;
   // if sensing black slice when prev state is white,
   if (sensorVal > white_thresh && state == 1 && dir == 1) { state = 0; counter++; }
   // if sensing white slice when prev state is black,
@@ -80,8 +75,9 @@ void detect_slice(){
   if (sensorVal > white_thresh && state == 1 && dir ==-1) { state = 0; counter--; }
   if (sensorVal < black_thresh && state == 0 && dir==-1) { state = 1; counter--; }
 
-  Serial.print("state: "); Serial.println(state);
-  Serial.print("ir_read: "); Serial.println(sensorVal);
+  //  Serial.print("state: "); Serial.println(state);
+  //  Serial.print("ir_read: "); Serial.println(sensorVal);
   Serial.print("COUNT: "); Serial.println(counter);
   delay(50);
 }
+
